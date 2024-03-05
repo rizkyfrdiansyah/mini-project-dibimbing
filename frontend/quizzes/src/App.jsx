@@ -1,35 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import LoginPage from "./pages/Auth/LoginPage";
+import RegistrationPage from "./pages/Auth/RegistrationPage";
+import DashboardPage from "./pages/Admin/DashboardPage";
+import QuizListPage from "./pages/Participant/QuizListPage";
+import QuizPage from "./pages/Participant/QuizPage";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [user, setUser] = useState(null);
+
+  const handleLogin = (userData) => {
+    console.log("Login:", userData);
+  };
+
+  const handleRegister = (userData) => {
+    console.log("Register:", userData);
+  };
+
+  const handleCreateQuiz = (quizData) => {
+    console.log("Create Quiz:", quizData);
+  };
 
   return (
-    <>
+    <Router>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <Switch>
+          {/* Authentication Routes */}
+          <Route path="/login">
+            <LoginPage onLogin={handleLogin} />
+          </Route>
+          <Route path="/register">
+            <RegistrationPage onRegister={handleRegister} />
+          </Route>
+
+          {/* Admin Routes */}
+          <Route path="/admin/dashboard">
+            <DashboardPage quizzes={[]} onCreateQuiz={handleCreateQuiz} />
+          </Route>
+
+          {/* Participant Routes */}
+          <Route path="/participant/quizzes" exact>
+            <QuizListPage quizzes={[]} />
+          </Route>
+          <Route path="/participant/quiz/:quizId">
+            <QuizPage />
+          </Route>
+
+          {/* Default Route (Home or Login based on user state) */}
+          <Route path="/" exact>
+            {user ? <DashboardPage quizzes={[]} onCreateQuiz={handleCreateQuiz} /> : <LoginPage onLogin={handleLogin} />}
+          </Route>
+        </Switch>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </Router>
+  );
 }
 
-export default App
+export default App;
